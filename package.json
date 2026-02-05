@@ -1,0 +1,15 @@
+{
+  "name": "games-on-web",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "turbo run develop --parallel"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.12"
+  }
+}

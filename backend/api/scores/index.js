@@ -2,9 +2,9 @@ const { connectToDatabase } = require('../../lib/mongodb');
 const Score = require('../../models/Score');
 
 module.exports = async (req, res) => {
-  await connectToDatabase();
-
   try {
+    await connectToDatabase();
+
     if (req.method === 'GET') {
       const scores = await Score.find().sort({ score: -1 }).limit(10);
       return res.status(200).json(scores);

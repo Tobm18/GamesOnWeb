@@ -13,8 +13,8 @@ function setTokenCookie(res, token) {
 }
 
 module.exports = async (req, res) => {
-  await connectToDatabase();
   try {
+    await connectToDatabase();
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
       return res.status(405).end('Method Not Allowed');

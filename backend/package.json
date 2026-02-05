@@ -1,14 +1,10 @@
 {
-  "name": "backend",
+  "name": "gamesonweb-backend",
   "version": "1.0.0",
-  "main": "",
+  "author": "ToBm18",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "develop": "vercel dev --listen 3001 --yes"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "dotenv": "^17.2.3",
     "bcrypt": "^5.1.0",

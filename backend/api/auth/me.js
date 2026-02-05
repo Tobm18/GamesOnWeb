@@ -15,8 +15,8 @@ function parseCookies(req) {
 }
 
 module.exports = async (req, res) => {
-  await connectToDatabase();
   try {
+    await connectToDatabase();
     if (req.method !== 'GET') {
       res.setHeader('Allow', 'GET');
       return res.status(405).end('Method Not Allowed');
