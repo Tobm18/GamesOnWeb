@@ -9,7 +9,9 @@
         { "src": "backend/api/**/*.js", "use": "@vercel/node" }
     ],
     "routes": [
-        { "src": "/api/(.*)", "dest": "/backend/api/$1.js" },
+        { "src": "/api/auth/(.*)", "dest": "/backend/api/auth/$1.js" },
+        { "src": "^/api/scores$", "dest": "/backend/api/scores/index.js" },
+
         { "src": "/assets/(.*)", "dest": "/frontend/assets/$1" },
         { "src": "/games/(.*)", "dest": "/frontend/games/$1" },
         { "src": "/images/(.*)", "dest": "/frontend/images/$1" },
