@@ -8,6 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -30,7 +31,11 @@ export default function Login() {
       await login(email, password)
       handleAuthSuccess()
     } catch (err) {
-      setError('Échec de la connexion. Vérifiez vos identifiants.')
+      if (err.message === 'Invalid credentials') {
+        setError('Email ou mot de passe incorrect.')
+      } else {
+        setError('Une erreur est survenue lors de la connexion.')
+      }
     } finally {
       setLoading(false);
     }
@@ -46,7 +51,11 @@ export default function Login() {
       await login(email, password)
       handleAuthSuccess()
     } catch (err) {
-      setError('Échec de l\'inscription.')
+      if (err.message === 'Email already in use') {
+        setError('Cette adresse email est déjà utilisée.')
+      } else {
+        setError('Une erreur est survenue lors de l\'inscription.')
+      }
     } finally {
       setLoading(false);
     }
@@ -66,22 +75,32 @@ export default function Login() {
             <h2 className="login-title">Bienvenue sur <span className="colored-title">Games on Web</span></h2>
             
             <div className="tabs">
-              <button className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`} onClick={() => setActiveTab('login')}>
+              <button className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`} onClick={() => { setActiveTab('login'); setError(null); }}>
                 <i className="fa-solid fa-right-to-bracket"></i> Connexion
               </button>
-              <button className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`} onClick={() => setActiveTab('register')}>
+              <button className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`} onClick={() => { setActiveTab('register'); setError(null); }}>
                 <i className="fa-solid fa-user-plus"></i> Inscription
               </button>
             </div>
+
+            {error && (
+              <div className="error-message">
+                <i className="fa-solid fa-triangle-exclamation"></i>
+                <span>{error}</span>
+              </div>
+            )}
 
             <form className={`auth-form ${activeTab === 'login' ? 'active' : ''}`} onSubmit={handleSubmit}>
               <div className="form-group">
                 <label><i className="fa-solid fa-envelope"></i> Adresse email</label>
                 <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Entrez votre adresse email" required />
               </div>
-              <div className="form-group">
+              <div className="form-group password-wrapper">
                 <label><i className="fa-solid fa-lock"></i> Mot de passe</label>
-                <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Entrez votre mot de passe" required />
+                <input value={password} onChange={e => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} placeholder="Entrez votre mot de passe" required />
+                <button type="button" className="toggle-password" onClick={() => setShowPassword(s => !s)} aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+                  <i className={showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}></i>
+                </button>
               </div>
               <button type="submit" className="submit-btn" disabled={loading}>
                 <i className="fa-solid fa-right-to-bracket"></i> {loading ? 'Connexion...' : 'Se connecter'}
@@ -97,16 +116,17 @@ export default function Login() {
                 <label><i className="fa-solid fa-envelope"></i> Adresse email</label>
                 <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Entrez votre adresse email" required />
               </div>
-              <div className="form-group">
+              <div className="form-group password-wrapper">
                 <label><i className="fa-solid fa-lock"></i> Mot de passe</label>
-                <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Choisissez un mot de passe" required />
+                <input value={password} onChange={e => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} placeholder="Choisissez un mot de passe" required />
+                <button type="button" className="toggle-password" onClick={() => setShowPassword(s => !s)} aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}>
+                  <i className={showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}></i>
+                </button>
               </div>
               <button type="submit" className="submit-btn" disabled={loading}>
                 <i className="fa-solid fa-user-plus"></i> {loading ? 'Inscription...' : 'S\'inscrire'}
               </button>
             </form>
-
-            {error && <div className="message" style={{ display: 'block', color: '#ff4444' }}>{error}</div>}
           </div>
         </div>
       </main>

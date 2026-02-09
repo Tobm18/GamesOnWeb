@@ -15,7 +15,10 @@ export async function login(email, password) {
     credentials: 'include',
     body: JSON.stringify({ email, password })
   })
-  if (!res.ok) throw new Error('Login failed')
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Login failed');
+  }
   return res.json()
 }
 
@@ -26,7 +29,10 @@ export async function register(username, email, password) {
     credentials: 'include',
     body: JSON.stringify({ username, email, password })
   })
-  if (!res.ok) throw new Error('Register failed')
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Register failed');
+  }
   return res.json()
 }
 
