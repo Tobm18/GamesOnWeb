@@ -848,3 +848,53 @@ footer {
 .avatar-popup-btn i {
     margin-right: 8px;
 }
+
+/* Game Controls */
+.game-controls {
+    z-index: 10;
+}
+
+.control-btn {
+    background: rgba(0, 170, 255, 0.1);
+    border: 1px solid rgba(0, 170, 255, 0.3);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(0, 170, 255, 0.2);
+    border-color: #0af;
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.control-btn i {
+    font-size: 0.9rem;
+}
+
+
+/* Fullscreen overrides */
+.keep-it-alive-frame-container:fullscreen {
+    padding: 0 !important;
+    background: #000 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border: none !important;
+}
+
+.keep-it-alive-frame-container:fullscreen iframe {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+

@@ -1,0 +1,322 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+}
+
+.game-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container.hide-cursor,
+.game-container.hide-cursor #gameCanvas {
+    cursor: none;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(180deg, #0a0a1e 0%, #000000 100%);
+    cursor: pointer;
+}
+
+.score {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 0 0 20px rgba(78, 205, 196, 0.8), 0 0 40px rgba(78, 205, 196, 0.4);
+    z-index: 10;
+    pointer-events: none;
+    font-family: 'Courier New', monospace;
+}
+
+.start-screen,
+.game-over {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+/* dim overlay */
+.start-screen::before,
+.game-over::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+}
+
+.start-screen h1 {
+    font-size: 48px;
+    margin: 0 0 6px;
+    color: #4ecdc4;
+    letter-spacing: 1.5px;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 18px;
+    opacity: 0.9;
+    color: #d7eae6;
+}
+
+.controls-section, .objectives-section {
+    background: rgb(33 48 68 / 85%);
+    border-radius: 12px;
+    border: 2px solid #25839e;
+    padding: 12px 0;
+    margin: 8px 0;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.controls-section h3, .objectives-section h3 {
+    font-size: 24px;
+    margin-bottom: 18px;
+    color: #4ecdc4;
+    text-shadow: 0 0 15px rgba(78, 205, 196, 0.5);
+    font-weight: bold;
+}
+
+.control-item {
+    margin: 10px 0;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.key {
+    background: linear-gradient(145deg, #4ecdc4, #44a3a0);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 3px 10px rgba(78, 205, 196, 0.35);
+    font-size: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.control-desc {
+    color: #fff;
+    opacity: 0.9;
+}
+
+.objectives-section ul {
+    padding: 0;
+    text-align: left;
+}
+
+.objectives-section li {
+    margin: 12px 0;
+    font-size: 16px;
+    padding-left: 10px;
+}
+
+.game-over h2 {
+    font-size: 34px;
+    margin: 0 0 10px;
+    color: #ff6b6b;
+}
+
+.stats-container {
+    border-radius: 12px;
+    padding: 10px 0 0;
+    margin: 10px 0 0;
+    max-width: 420px;
+}
+
+.final-score {
+    font-size: 26px;
+    margin-bottom: 8px;
+    color: #FFD700;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    text-align: center;
+}
+
+.final-score span {
+    font-weight: bold;
+    font-size: 40px;
+    display: block;
+    margin-top: 6px;
+}
+
+.survival-message {
+    margin: 8px 0 14px 0;
+    font-size: 18px;
+    color: #e6f7f2;
+    opacity: 0.95;
+}
+
+.start-btn,
+.restart-btn {
+    padding: 12px 34px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .16s, box-shadow .16s;
+}
+
+.start-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, .45);
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #4ecdc4, #44a3a0);
+    box-shadow: 0 6px 18px rgba(78, 205, 196, .45);
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, .6);
+}
+
+.restart-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(78, 205, 196, .7), 0 0 40px rgba(78, 205, 196, .3);
+}
+
+.start-btn:active,
+.restart-btn:active {
+    transform: translateY(0);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.game-over:not(.hidden) {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Modal card used by start and game over */
+.modal-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(8,12,20,0.9), rgba(12,18,30,0.95));
+    border-radius: 14px;
+    padding: 28px 32px;
+    max-width: 760px;
+    width: calc(100% - 80px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(78,205,196,0.04);
+    border: 1px solid rgba(255,255,255,0.04);
+    color: #fff;
+    z-index: 21;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.card-actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+}
+
+/* Power-up Legend */
+.powerup-legend {
+    position: absolute;
+    top: 40px;
+    right: 30px;
+    background: linear-gradient(135deg, rgba(20, 20, 40, 0.85), rgba(10, 10, 30, 0.85));
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(78, 205, 196, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.powerup-legend h4 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    color: #4ecdc4;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(78, 205, 196, .5);
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+}
+
+.legend-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 0 0 15px currentColor;
+    flex-shrink: 0;
+}
+
+.legend-icon.shield {
+    background: rgba(0, 191, 255, .5);
+    border: 3px solid #00BFFF;
+    box-shadow: 0 0 15px #00BFFF;
+}
+
+.legend-icon.slowmo {
+    background: rgba(50, 205, 50, .5);
+    border: 3px solid #32CD32;
+    box-shadow: 0 0 15px #32CD32;
+}
+
+.legend-icon.doublepoints {
+    background: rgba(255, 215, 0, .5);
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 15px #FFD700;
+}
+
+.legend-text {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, .5);
+}

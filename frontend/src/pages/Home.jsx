@@ -10,7 +10,7 @@ export default function Home() {
   const [currentCard, setCurrentCard] = useState(0)
 
   const games = [
-    { id: 'cyberquest', title: 'CyberQuest', description: "Plongez dans un univers futuriste rempli d'aventures et de défis.", score: '15,420', img: '/assets/cyberquest.jpg' },
+    { id: 'keep-it-alive', title: 'Keep It Alive', description: "Survivez le plus longtemps possible dans ce jeu d'adresse frénétique.", score: '0', img: '/images/keep-it-alive.png' },
     { id: 'fantasy', title: 'Fantasy Realm', description: 'Explorez des royaumes magiques et combattez des créatures légendaires.', score: '23,890', img: '/assets/fantasy.jpg' },
     { id: 'space', title: 'Space Odyssey', description: 'Partez à la conquête de l\'espace et découvrez de nouvelles planètes.', score: '31,200', img: '/assets/space.jpg' }
   ]
