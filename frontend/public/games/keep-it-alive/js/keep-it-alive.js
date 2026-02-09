@@ -159,9 +159,9 @@ class PointCollectable {
 function drawPowerupTimers() {
     const centerX = canvas.width / 2;
     const timers = [
-        activePowerups.shield > 0 && { color: '#00BFFF', symbol: '🛡️', text: `${(activePowerups.shield / 60).toFixed(1)}s` },
-        activePowerups.slowmo > 0 && { color: '#32CD32', symbol: '⏱️', text: `${(activePowerups.slowmo / 60).toFixed(1)}s` },
-        activePowerups.doublePoints > 0 && { color: '#FFD700', symbol: '⭐', text: `${(activePowerups.doublePoints / 60).toFixed(1)}s${doublePointsCombo > 1 ? ` x${doublePointsCombo}` : ''}` }
+        activePowerups.shield > 0 && { color: '#00BFFF', symbol: '\uf132', text: `${(activePowerups.shield / 60).toFixed(1)}s` },
+        activePowerups.slowmo > 0 && { color: '#32CD32', symbol: '\uf017', text: `${(activePowerups.slowmo / 60).toFixed(1)}s` },
+        activePowerups.doublePoints > 0 && { color: '#FFD700', symbol: '\uf005', text: `${(activePowerups.doublePoints / 60).toFixed(1)}s${doublePointsCombo > 1 ? ` x${doublePointsCombo}` : ''}` }
     ].filter(Boolean);
     
     timers.forEach((timer, index) => {
@@ -184,7 +184,7 @@ function drawPowerupTimers() {
         
         // Symbol
         ctx.shadowBlur = 0;
-        ctx.font = '24px Arial';
+        ctx.font = '900 20px "Font Awesome 6 Free"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(timer.symbol, centerX - 80, yPos);
@@ -281,9 +281,9 @@ class Powerup {
         ctx.stroke();
         
         // Symbol
-        const symbols = { shield: '🛡️', slowmo: '⏱️', doublePoints: '⭐' };
+        const symbols = { shield: '\uf132', slowmo: '\uf017', doublePoints: '\uf005' };
         ctx.shadowBlur = 0;
-        ctx.font = '20px Arial';
+        ctx.font = '900 16px "Font Awesome 6 Free"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(symbols[this.type], 0, 0);
