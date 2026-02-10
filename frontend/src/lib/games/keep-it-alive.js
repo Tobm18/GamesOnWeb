@@ -1,22 +1,23 @@
-const canvas = document.getElementById('gameCanvas');
+export function initKeepItAlive(canvas, onScoreUpdate, onGameOver) {
 const ctx = canvas.getContext('2d');
 
-let INITIAL_WIDTH = window.innerWidth;
-let INITIAL_HEIGHT = window.innerHeight;
+let INITIAL_WIDTH = canvas.clientWidth || window.innerWidth;
+let INITIAL_HEIGHT = canvas.clientHeight || window.innerHeight;
 canvas.width = INITIAL_WIDTH;
 canvas.height = INITIAL_HEIGHT;
 
-window.addEventListener('resize', () => {
-    INITIAL_WIDTH = window.innerWidth;
-    INITIAL_HEIGHT = window.innerHeight;
-    if (gameState === 'playing') {
-        canvas.width = INITIAL_WIDTH;
-        canvas.height = INITIAL_HEIGHT;
-    }
-});
+const handleResize = () => {
+    INITIAL_WIDTH = canvas.clientWidth || window.innerWidth;
+    INITIAL_HEIGHT = canvas.clientHeight || window.innerHeight;
+    canvas.width = INITIAL_WIDTH;
+    canvas.height = INITIAL_HEIGHT;
+};
+
+window.addEventListener('resize', handleResize);
 
 let gameState = 'start';
 let score = 0;
+let lastSentScore = 0;
 let animationId;
 let doublePointsCombo = 1;
 
@@ -167,13 +168,28 @@ function drawPowerupTimers() {
     timers.forEach((timer, index) => {
         const yPos = 100 + (index * 50);
         
+        // Layout: compute total width (circle + gap + text) and center it
+        const circleRadius = 18;
+        const circleDiameter = circleRadius * 2;
+        const gap = 12;
+
+        // Measure text width using the same font we will draw it with
         ctx.save();
+        ctx.font = 'bold 28px Arial';
+        const textMetrics = ctx.measureText(timer.text);
+        const textWidth = Math.ceil(textMetrics.width);
+
+        const totalWidth = circleDiameter + gap + textWidth;
+        const startX = centerX - totalWidth / 2;
+        const circleX = startX + circleRadius;
+        const textX = startX + circleDiameter + gap;
+
         ctx.shadowBlur = 20;
         ctx.shadowColor = timer.color;
-        
+
         // Power-up circle
         ctx.beginPath();
-        ctx.arc(centerX - 80, yPos, 18, 0, Math.PI * 2);
+        ctx.arc(circleX, yPos, circleRadius, 0, Math.PI * 2);
         ctx.fillStyle = timer.color;
         ctx.globalAlpha = 0.3;
         ctx.fill();
@@ -181,22 +197,22 @@ function drawPowerupTimers() {
         ctx.strokeStyle = timer.color;
         ctx.lineWidth = 3;
         ctx.stroke();
-        
-        // Symbol
+
+        // Symbol (centered in the circle)
         ctx.shadowBlur = 0;
         ctx.font = '900 20px "Font Awesome 6 Free"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(timer.symbol, centerX - 80, yPos);
-        
-        // Timer text
+        ctx.fillText(timer.symbol, circleX, yPos);
+
+        // Timer text (to the right of the circle)
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'left';
         ctx.fillStyle = timer.color;
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 4;
-        ctx.strokeText(timer.text, centerX - 50, yPos + 2);
-        ctx.fillText(timer.text, centerX - 50, yPos + 2);
+        ctx.strokeText(timer.text, textX, yPos + 2);
+        ctx.fillText(timer.text, textX, yPos + 2);
         ctx.restore();
     });
 }
@@ -359,7 +375,6 @@ class Obstacle {
             ctx.translate(this.x, this.y);
         }
         
-        // Gradient
         const gradient = ctx.createLinearGradient(0, 0, this.width, 0);
         gradient.addColorStop(0, this.color);
         gradient.addColorStop(0.5, 'rgba(255, 107, 107, 0.8)');
@@ -371,7 +386,7 @@ class Obstacle {
         ctx.fillRect(0, 0, this.width, this.height);
         ctx.shadowBlur = 0;
         
-        // Bordure animée
+        // Bordure 
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.lineWidth = 2;
         ctx.strokeRect(0, 0, this.width, this.height);
@@ -442,75 +457,15 @@ class Particle {
     }
 }
 
-// Éléments DOM
-const scoreElement = document.getElementById('score');
-const gameOverScreen = document.getElementById('gameOver');
-const startScreen = document.getElementById('startScreen');
-const startBtn = document.getElementById('startBtn');
-const restartBtn = document.getElementById('restartBtn');
-const finalScoreElement = document.getElementById('finalScore');
-const survivalMessageElement = document.getElementById('survivalMessage');
-const gameContainer = document.querySelector('.game-container');
-
-startBtn.addEventListener('click', startGame);
-restartBtn.addEventListener('click', () => {
-    gameOverScreen.classList.add('hidden');
-    startGame();
-});
-
-canvas.addEventListener('click', () => {
-    if (gameState === 'playing') {
-        applyImpulse();
-    }
-});
-
-document.addEventListener('keydown', (e) => {
-    if (gameState === 'playing') {
-        if (e.code === 'Space') {
-            e.preventDefault();
-            applyImpulse();
-        } else if (e.code === 'ArrowLeft') {
-            e.preventDefault();
-            keys.left = true;
-        } else if (e.code === 'ArrowRight') {
-            e.preventDefault();
-            keys.right = true;
-        }
-    }
-});
-
-document.addEventListener('keyup', (e) => {
-    if (e.code === 'ArrowLeft') {
-        keys.left = false;
-    } else if (e.code === 'ArrowRight') {
-        keys.right = false;
-    }
-});
-
-document.addEventListener('keydown', (e) => {
-    if (gameState === 'gameOver' && (e.code === 'Enter' || e.key === 'Enter')) {
-        startGame();
-    }
-});
-
-canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (gameState === 'playing') {
-        applyImpulse();
-    } else if (gameState === 'gameOver') {
-        startGame();
-    }
-});
-
 function startGame() {
+    
     gameState = 'playing';
     score = 0;
+    lastSentScore = 0;
     doublePointsCombo = 1;
     difficulty.startTime = Date.now();
     difficulty.obstacleSpeedMultiplier = 1;
-    
-    document.getElementById('powerupLegend').classList.remove('hidden');
-    
+
     canvas.width = INITIAL_WIDTH;
     canvas.height = INITIAL_HEIGHT;
     
@@ -539,10 +494,6 @@ function startGame() {
     
     keys.left = false;
     keys.right = false;
-    
-    startScreen.classList.add('hidden');
-    gameOverScreen.classList.add('hidden');
-    if (gameContainer) gameContainer.classList.add('hide-cursor');
     
     gameLoop();
 }
@@ -889,7 +840,11 @@ function drawStarfield() {
 }
 
 function updateScore() {
-    scoreElement.textContent = Math.floor(score) + ' pts';
+    const flooredScore = Math.floor(score);
+    if (flooredScore !== lastSentScore) {
+        onScoreUpdate(flooredScore);
+        lastSentScore = flooredScore;
+    }
 }
 
 function gameLoop() {
@@ -913,23 +868,39 @@ function gameOver() {
     gameState = 'gameOver';
     cancelAnimationFrame(animationId);
     
-    document.getElementById('powerupLegend').classList.add('hidden');
-    
     const finalScore = Math.floor(score);
-    finalScoreElement.textContent = finalScore;
+    const message = `Tu as survécu ${difficulty.currentTime.toFixed(1)}s`;
 
-    // Send score to the parent application
-    window.parent.postMessage({ 
-        type: 'GAME_OVER', 
-        score: finalScore 
-    }, '*');
-
-    if (survivalMessageElement) {
-        survivalMessageElement.textContent = `Tu as survécu ${difficulty.currentTime.toFixed(1)}s`;
-    }
-    gameOverScreen.classList.remove('hidden');
+    // Envoi du score final et du message au parent application
+    onGameOver(finalScore, message);
     
     for (let i = 0; i < 30; i++) particles.push(new Particle(ball.x, ball.y));
-    // Restore cursor when game ends
-    if (gameContainer) gameContainer.classList.remove('hide-cursor');
+}
+
+return {
+    start: startGame,
+    cleanup: () => {
+        cancelAnimationFrame(animationId);
+        window.removeEventListener('resize', handleResize);
+    },
+    applyImpulse: applyImpulse,
+    handleKeyDown: (code) => {
+        if (gameState === 'playing') {
+            if (code === 'Space') {
+                applyImpulse();
+            } else if (code === 'ArrowLeft') {
+                keys.left = true;
+            } else if (code === 'ArrowRight') {
+                keys.right = true;
+            }
+        }
+    },
+    handleKeyUp: (code) => {
+        if (code === 'ArrowLeft') {
+            keys.left = false;
+        } else if (code === 'ArrowRight') {
+            keys.right = false;
+        }
+    }
+};
 }

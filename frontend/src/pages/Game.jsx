@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useScores } from '../context/ScoreContext'
+import KeepItAlive from '../components/games/KeepItAlive'
 
 export default function Game() {
   const navigate = useNavigate()
@@ -18,23 +19,12 @@ export default function Game() {
       setIsFullscreen(!!document.fullscreenElement)
     }
 
-    const handleMessage = async (event) => {
-      if (event.data.type === 'GAME_OVER') {
-        const { score } = event.data
-        if (selectedGame) {
-          updateScore(selectedGame, score)
-        }
-      }
-    }
-
     document.addEventListener('fullscreenchange', handleFullscreenChange)
-    window.addEventListener('message', handleMessage)
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
-      window.removeEventListener('message', handleMessage)
     }
-  }, [user, selectedGame, updateScore])
+  }, [])
 
   useEffect(() => {
     if (loading) return
@@ -60,6 +50,10 @@ export default function Game() {
     } else {
       document.exitFullscreen()
     }
+  }
+
+  const handleScoreUpdate = (score) => {
+    updateScore(selectedGame, score)
   }
 
   const gameNames = { 'keep-it-alive': 'Keep It Alive', fantasy: 'Fantasy Realm', space: 'Space Odyssey' }
@@ -98,13 +92,12 @@ export default function Game() {
                 </div>
               </div>
             </div>
-            <div className="keep-it-alive-frame-container" ref={gameContainerRef}>
-              <iframe 
-                src="/games/keep-it-alive/index.html" 
-                title="Keep It Alive"
-                allow="fullscreen"
-              />
-            </div>
+
+            <KeepItAlive 
+              ref={gameContainerRef}
+              onScoreUpdate={handleScoreUpdate}
+              isFullscreen={isFullscreen}
+            />
           </div>
         ) : (
           <div className="coming-soon-container">
