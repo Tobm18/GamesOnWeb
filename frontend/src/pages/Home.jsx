@@ -40,7 +40,7 @@ export default function Home() {
       <main>
         <section className="introduction">
           <div className="welcome-content">
-            <h2 className="welcome-title">Bienvenue à Games on Web</h2>
+            <h2 className="welcome-title">Bienvenue à Tom's on Web</h2>
             <h1 className="welcome-year">2026</h1>
             <p className="welcome-subtitle">Découvrez les trois jeux de Tom BALLESTER pour l'édition de cette année.</p>
           </div>

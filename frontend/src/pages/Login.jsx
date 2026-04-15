@@ -76,7 +76,7 @@ export default function Login() {
       <main>
         <div className="login-container">
           <div className="login-card">
-            <h2 className="login-title">Bienvenue sur <span className="colored-title">Games on Web</span></h2>
+            <h2 className="login-title">Bienvenue sur <span className="colored-title">Tom's on Web</span></h2>
             
             <div className="tabs">
               <button className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`} onClick={() => { setActiveTab('login'); setError(null); }}>
