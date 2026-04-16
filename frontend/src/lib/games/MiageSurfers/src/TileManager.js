@@ -27,8 +27,8 @@ class TileManager {
 
   _createMaterials() {
     this.groundMat = new BABYLON.StandardMaterial('groundMat', this.scene);
-    this.groundMat.diffuseColor  = new BABYLON.Color3(0.05, 0.05, 0.1);
-    this.groundMat.emissiveColor = new BABYLON.Color3(0.0, 0.05, 0.15);
+    this.groundMat.diffuseColor  = new BABYLON.Color3(0.2, 0.2, 0.35);
+    this.groundMat.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.2);
 
     this.edgeMat = new BABYLON.StandardMaterial('edgeMat', this.scene);
     this.edgeMat.diffuseColor  = new BABYLON.Color3(0.0, 0.8, 1.0);
@@ -62,7 +62,9 @@ class TileManager {
   }
 
   _spawnTile() {
-    const z = (this.tileIndex - 1) * TileManager.TILE_LENGTH;
+    const z = this.tiles.length === 0
+      ? -TileManager.TILE_LENGTH
+      : this.tiles[this.tiles.length - 1].ground.position.z + TileManager.TILE_LENGTH;
 
     const ground = BABYLON.MeshBuilder.CreateBox('tile_' + this.tileIndex, {
       width:  TileManager.TILE_WIDTH,
@@ -150,6 +152,7 @@ class TileManager {
       // pilier droit
       const pilR = pilL.clone('obs_' + Math.random());
       pilR.position.x = x + 0.75;
+      pilR.material = this.tunnelMat;
       pilR.metadata = { type: 'tunnel' };
 
       tileGroup.obstacles.push(roof, pilL, pilR);
