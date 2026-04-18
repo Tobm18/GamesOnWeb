@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Puissance 4 - Jeu interactif avec Bot et 5 niveaux de difficulté" />
+    <title>Puissance 4</title>
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <div id="puissance4-container">
+        <div id="puissance4-container">
+            <div id="home-screen">
+                <h1>🎮 PUISSANCE 4</h1>
+                <p>5 niveaux de difficulté</p>
+                <p id="instructions">
+                    Commencez au niveau 1 et progressez à travers les 5 niveaux!
+                </p>
+            <div id="button-container">
+                <button class="action-button" id="start-btn">
+                    ▶️ Démarrer la Partie - Niveau 1
+                </button>
+            </div>
+            <div id="best-score-display">
+                🏆 Meilleur Score: 0 pts
+            </div>
+        </div>
+
+        <div id="game-screen" style="display: none;">
+            <div id="game-header">
+                <span id="level-display">Niveau: Confirmé</span>
+                <span id="score-display">Score: 0 pts</span>
+                <span id="timer-display">⏱️ 30s</span>
+            </div>
+            <div id="board"></div>
+            <div id="column-buttons"></div>
+        </div>
+
+        <div id="game-over-screen" style="display: none;">
+            <h2 id="game-result-message">🎉 Vous avez gagné!</h2>
+            <div id="final-score-display">
+                +1000 pts
+            </div>
+            <div id="challenge-message">
+                <p>Prêt pour un nouveau défi?</p>
+            </div>
+            <div>
+                <button class="action-button" id="play-again-btn">
+                🔄 Recommencer une partie au niveau 1 - Débutant
+                </button>
+            </div>
+            <div>
+                <button class="action-button" id="main-menu-btn">
+                🏠 Menu Principal
+                </button>
+            </div>
+        </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
