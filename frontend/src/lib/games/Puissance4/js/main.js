@@ -2,14 +2,15 @@
 // MAIN.JS - Point d'entrée du jeu
 // ============================================
 
-import { UIManager } from './managers/UIManager.js';
-import { GameManager } from './managers/GameManager.js';
-import { ScoreManager } from './managers/ScoreManager.js';
+import { UIManager } from "./managers/UIManager.js";
+import { GameManager } from "./managers/GameManager.js";
+import { ScoreManager } from "./managers/ScoreManager.js";
 
 class Puissance4Game {
-  constructor() {
-    this.uiManager = new UIManager();
-    this.scoreManager = new ScoreManager();
+  constructor(onScoreUpdate) {
+    this.controller = new AbortController();
+    this.uiManager = new UIManager(this.controller.signal);
+    this.scoreManager = new ScoreManager(onScoreUpdate);
     this.gameManager = new GameManager(this.uiManager, this.scoreManager);
   }
 
@@ -26,15 +27,17 @@ class Puissance4Game {
     this.uiManager.onMainMenu = () => this.handleMainMenu();
 
     // Ajouter un écouteur pour le bouton "Démarrer"
-    const startBtn = document.querySelector('#start-btn');
+    const startBtn = document.querySelector("#start-btn");
     if (startBtn) {
-      startBtn.addEventListener('click', () => this.handleStartGame());
+      startBtn.addEventListener("click", () => this.handleStartGame(), {
+        signal: this.controller.signal,
+      });
     }
 
     // Afficher l'écran d'accueil
     this.uiManager.showHomeScreen();
 
-    console.log('🎮 Puissance 4 - Jeu démarré!');
+    console.log("Puissance 4 - Jeu démarré!");
   }
 
   /**
@@ -64,10 +67,40 @@ class Puissance4Game {
   handleMainMenu() {
     this.gameManager.returnToHome();
   }
+
+  /**
+   * Nettoie le jeu (timers, écouteurs d'événements, etc.)
+   */
+  destroy() {
+    this.controller.abort(); // supprime tous les addEventListener liés au signal
+    this.gameManager.returnToHome();
+  }
 }
 
-// Démarrer le jeu au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-  const game = new Puissance4Game();
+/**
+ * Initialise Puissance4 dans le DOM courant.
+ * Doit être appelé après que le composant React a monté les éléments HTML.
+ * @param {function} onScoreUpdate - callback(score) appelé à chaque mise à jour de score
+ * @returns {{ destroy: function }} - objet avec une méthode destroy pour le cleanup
+ */
+export function initPuissance4(onScoreUpdate) {
+  const game = new Puissance4Game(onScoreUpdate);
   game.init();
-});
+  return { destroy: () => game.destroy() };
+}
+
+// Démarrer le jeu au chargement de la page (mode standalone)
+if (typeof document !== "undefined" && document.readyState !== "loading") {
+  // Ne pas auto-démarrer si importé comme module par React
+} else if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    // Mode standalone uniquement (fichier index.html ouvert directement)
+    if (
+      document.querySelector("#puissance4-container") &&
+      !window.__puissance4React
+    ) {
+      const game = new Puissance4Game(null);
+      game.init();
+    }
+  });
+}

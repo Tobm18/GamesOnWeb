@@ -1,62 +1,91 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { useScores } from '../context/ScoreContext'
-import KeepItAlive from '../components/games/KeepItAlive'
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useScores } from "../context/ScoreContext";
+import KeepItAlive from "../components/games/KeepItAlive";
+import MiageSurfers from "../components/games/MiageSurfers";
+import Puissance4 from "../components/games/Puissance4";
 
 export default function Game() {
-  const navigate = useNavigate()
-  const { user, loading } = useAuth()
-  const { scores, updateScore } = useScores()
-  const gameContainerRef = useRef(null)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const { scores, updateScore } = useScores();
+  const gameContainerRef = useRef(null);
+  const selectedGame = localStorage.getItem("selectedGame");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [liveScore, setLiveScore] = useState(() =>
+    selectedGame === "puissance4"
+      ? Number(localStorage.getItem("puissance4_session_score") || 0)
+      : 0,
+  );
 
-  const selectedGame = localStorage.getItem('selectedGame')
-  const gameScores = scores[selectedGame] || { topScore: null, personalScore: null }
+  const gameScores = scores[selectedGame] || {
+    topScore: null,
+    personalScore: null,
+  };
 
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
-    }
+      setIsFullscreen(!!document.fullscreenElement);
+    };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
 
     return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
-    }
-  }, [])
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   useEffect(() => {
-    if (loading) return
+    if (loading) return;
 
-    const storedGame = localStorage.getItem('selectedGame')
+    const storedGame = localStorage.getItem("selectedGame");
     if (!storedGame) {
-      navigate('/')
-      return
+      navigate("/");
+      return;
     }
 
     if (!user) {
-      navigate('/login')
-    } 
-  }, [user, loading, navigate])
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
 
   const toggleFullscreen = () => {
-    if (!gameContainerRef.current) return
-    
+    if (!gameContainerRef.current) return;
+
     if (!document.fullscreenElement) {
-      gameContainerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message}`)
-      })
+      gameContainerRef.current.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message}`,
+        );
+      });
     } else {
-      document.exitFullscreen()
+      document.exitFullscreen();
     }
-  }
+  };
 
-  const handleScoreUpdate = (score) => {
-    updateScore(selectedGame, score)
-  }
+  // Score live : affichage seulement, pas de DB
+  const handleLiveScore = (score) => {
+    if (selectedGame === "puissance4") {
+      setLiveScore(score);
+      localStorage.setItem("puissance4_session_score", score);
+    }
+  };
 
-  const gameNames = { 'keep-it-alive': 'Keep It Alive', fantasy: 'Fantasy Realm', space: 'Space Odyssey' }
+  // Score final : uniquement à la fin de la partie → DB (upsert si supérieur)
+  const handleGameOver = (score) => {
+    updateScore(selectedGame, score);
+    if (selectedGame === "puissance4") {
+      setLiveScore(score);
+      localStorage.setItem("puissance4_session_score", score);
+    }
+  };
+
+  const gameNames = {
+    "keep-it-alive": "Keep It Alive",
+    "miage-surfers": "Miage Surfers",
+    puissance4: "Puissance 4",
+  };
 
   return (
     <div className="game-page">
@@ -66,36 +95,134 @@ export default function Game() {
       <div className="blue-glow-4"></div>
       <div className="blue-glow-5"></div>
 
-      <main style={{ height: selectedGame === 'keep-it-alive' ? '85vh' : 'auto' }}>
-        {selectedGame === 'keep-it-alive' ? (
+      <main
+        style={{ height: selectedGame === "keep-it-alive" ? "85vh" : "auto" }}
+      >
+        {selectedGame === "keep-it-alive" ? (
           <div className="keep-it-alive-wrapper">
             <div className="game-controls">
               <div className="game-controls-btns">
-                <button className="control-btn" onClick={() => navigate('/')}>
+                <button className="control-btn" onClick={() => navigate("/")}>
                   <i className="fa-solid fa-arrow-left"></i> Retour à l'accueil
                 </button>
                 <button className="control-btn" onClick={toggleFullscreen}>
-                  <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
-                  {isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+                  <i
+                    className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}
+                  ></i>
+                  {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
                 </button>
               </div>
-              
+
               <div className="game-status-scores">
                 <div className="score-item">
                   <span className="score-item-title">Meilleur score :</span>
-                  <span>{gameScores.topScore ? `${gameScores.topScore.score} pts (${gameScores.topScore.playerName})` : 'Aucun'}</span>
+                  <span>
+                    {gameScores.topScore
+                      ? `${gameScores.topScore.score} pts (${gameScores.topScore.playerName})`
+                      : "Aucun"}
+                  </span>
                 </div>
-                <div className='score-item-separator'></div>
+                <div className="score-item-separator"></div>
                 <div className="score-item">
                   <span className="score-item-title">Ton Record:</span>
-                  <span>{gameScores.personalScore ? `${gameScores.personalScore.score} pts` : '0 pts'}</span>
+                  <span>
+                    {gameScores.personalScore
+                      ? `${gameScores.personalScore.score} pts`
+                      : "0 pts"}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <KeepItAlive 
+            <KeepItAlive
               ref={gameContainerRef}
-              onScoreUpdate={handleScoreUpdate}
+              onScoreUpdate={handleLiveScore}
+              onGameOver={handleGameOver}
+              isFullscreen={isFullscreen}
+            />
+          </div>
+        ) : selectedGame === "miage-surfers" ? (
+          <div className="keep-it-alive-wrapper">
+            <div className="game-controls">
+              <div className="game-controls-btns">
+                <button className="control-btn" onClick={() => navigate("/")}>
+                  <i className="fa-solid fa-arrow-left"></i> Retour à l'accueil
+                </button>
+                <button className="control-btn" onClick={toggleFullscreen}>
+                  <i
+                    className={`fa-solid ${isFullscreen ? "fa-compress" : "fa-expand"}`}
+                  ></i>
+                  {isFullscreen ? "Quitter le plein écran" : "Plein écran"}
+                </button>
+              </div>
+
+              <div className="game-status-scores">
+                <div className="score-item">
+                  <span className="score-item-title">Meilleur score :</span>
+                  <span>
+                    {gameScores.topScore
+                      ? `${gameScores.topScore.score} pts (${gameScores.topScore.playerName})`
+                      : "Aucun"}
+                  </span>
+                </div>
+                <div className="score-item-separator"></div>
+                <div className="score-item">
+                  <span className="score-item-title">Ton Record:</span>
+                  <span>
+                    {gameScores.personalScore
+                      ? `${gameScores.personalScore.score} pts`
+                      : "0 pts"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <MiageSurfers
+              ref={gameContainerRef}
+              onScoreUpdate={handleLiveScore}
+              onGameOver={handleGameOver}
+              isFullscreen={isFullscreen}
+            />
+          </div>
+        ) : selectedGame === "puissance4" ? (
+          <div className="keep-it-alive-wrapper">
+            <div className="game-controls">
+              <div className="game-controls-btns">
+                <button className="control-btn" onClick={() => navigate("/")}>
+                  <i className="fa-solid fa-arrow-left"></i> Retour à l'accueil
+                </button>
+              </div>
+
+              <div className="game-status-scores">
+                <div className="score-item">
+                  <span className="score-item-title">Score actuel :</span>
+                  <span>{liveScore} pts</span>
+                </div>
+                <div className="score-item-separator"></div>
+                <div className="score-item">
+                  <span className="score-item-title">Meilleur score :</span>
+                  <span>
+                    {gameScores.topScore
+                      ? `${gameScores.topScore.score} pts (${gameScores.topScore.playerName})`
+                      : "Aucun"}
+                  </span>
+                </div>
+                <div className="score-item-separator"></div>
+                <div className="score-item">
+                  <span className="score-item-title">Ton Record:</span>
+                  <span>
+                    {gameScores.personalScore
+                      ? `${gameScores.personalScore.score} pts`
+                      : "0 pts"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <Puissance4
+              ref={gameContainerRef}
+              onScoreUpdate={handleLiveScore}
+              onGameOver={handleGameOver}
               isFullscreen={isFullscreen}
             />
           </div>
@@ -105,7 +232,9 @@ export default function Game() {
               <div className="game-icon">
                 <i className="fa-solid fa-gamepad"></i>
               </div>
-              <h1 className="game-title">{selectedGame ? (gameNames[selectedGame] || 'Jeu') : 'Jeu'}</h1>
+              <h1 className="game-title">
+                {selectedGame ? gameNames[selectedGame] || "Jeu" : "Jeu"}
+              </h1>
               <div className="coming-soon-badge">
                 <span className="badge-text">Coming Soon</span>
               </div>
@@ -114,11 +243,8 @@ export default function Game() {
                 Restez connecté pour ne pas manquer son lancement.
               </p>
               <div className="action-buttons">
-                <button className="btn-primary" onClick={() => navigate('/')}>
+                <button className="btn-primary" onClick={() => navigate("/")}>
                   <i className="fa-solid fa-home"></i> Retour à l'accueil
-                </button>
-                <button className="btn-secondary">
-                  <i className="fa-solid fa-bell"></i> Me notifier
                 </button>
               </div>
             </div>
@@ -127,5 +253,5 @@ export default function Game() {
         )}
       </main>
     </div>
-  )
+  );
 }

@@ -2,11 +2,17 @@
 // CLASSE GAMEMANAGER - Gestion du flux du jeu
 // ============================================
 
-import { Board } from '../entities/Board.js';
-import { Player } from '../entities/Player.js';
-import { Bot } from '../entities/Bot.js';
-import { PLAYERS, LEVELS, LEVEL_INFO, RESULT, GAME_CONFIG } from '../utils/constants.js';
-import { isBoardFull } from '../utils/helpers.js';
+import { Board } from "../entities/Board.js";
+import { Player } from "../entities/Player.js";
+import { Bot } from "../entities/Bot.js";
+import {
+  PLAYERS,
+  LEVELS,
+  LEVEL_INFO,
+  RESULT,
+  GAME_CONFIG,
+} from "../utils/constants.js";
+import { isBoardFull } from "../utils/helpers.js";
 
 export class GameManager {
   constructor(uiManager, scoreManager) {
@@ -14,7 +20,7 @@ export class GameManager {
     this.scoreManager = scoreManager;
 
     this.board = null;
-    this.human = new Player('Joueur', PLAYERS.HUMAN);
+    this.human = new Player("Joueur", PLAYERS.HUMAN);
     this.bot = null;
     this.currentPlayer = PLAYERS.HUMAN;
     this.gameActive = false;
@@ -22,6 +28,7 @@ export class GameManager {
 
     this.moveStartTime = null;
     this.timerInterval = null;
+    this.botTimeout = null;
     this.botThinking = false;
     this.gameOverTimeout = null;
     this.lastGameResult = null;
@@ -48,8 +55,6 @@ export class GameManager {
     this.ui.showGameScreen();
     this.ui.resetGame();
     this.ui.updateLevelDisplay(level);
-    this.ui.updateScoreDisplay(this.scoreManager.getCurrentScore());
-    this.ui.updateBestScoreDisplay(this.scoreManager.getBestScore());
 
     this.startMoveTimer();
   }
@@ -58,15 +63,23 @@ export class GameManager {
    * Traite un coup du joueur
    */
   async playerMove(col) {
-    if (!this.gameActive || this.currentPlayer !== PLAYERS.HUMAN || this.botThinking) {
+    if (
+      !this.gameActive ||
+      this.currentPlayer !== PLAYERS.HUMAN ||
+      this.botThinking
+    ) {
       return;
     }
 
     // Vérifier que la colonne est valide
     if (this.board.isColumnFull(col)) {
-      this.ui.showNotification('Colonne pleine!');
+      this.ui.showNotification("Colonne pleine!");
       return;
     }
+
+    // Stopper le timer immédiatement dès que le coup est validé,
+    // avant l'animation, pour éviter tout tir parasite.
+    this.stopMoveTimer();
 
     // Verrouiller immédiatement les entrées pour éviter les multi-clics pendant l'animation.
     this.botThinking = true;
@@ -77,6 +90,7 @@ export class GameManager {
     if (!result) {
       this.botThinking = false;
       this.ui.disableColumnButtons(false);
+      this.startMoveTimer();
       return;
     }
 
@@ -101,7 +115,6 @@ export class GameManager {
 
     // Tour du Bot
     this.currentPlayer = PLAYERS.Bot;
-    this.stopMoveTimer();
     this.playBot();
   }
 
@@ -114,7 +127,12 @@ export class GameManager {
 
     const reactionTime = LEVEL_INFO[this.currentLevel].reactionTime;
 
-    setTimeout(async () => {
+    this.botTimeout = setTimeout(async () => {
+      this.botTimeout = null;
+
+      // Annuler si la partie a été arrêtée pendant le délai de réaction
+      if (!this.gameActive) return;
+
       const col = this.bot.getMove(this.board.getGrid());
 
       const result = this.board.dropPiece(col, PLAYERS.Bot);
@@ -127,6 +145,9 @@ export class GameManager {
       const { row } = result;
 
       await this.ui.addPiece(row, col, PLAYERS.Bot);
+
+      // Vérifier que la partie est toujours active après l'animation
+      if (!this.gameActive) return;
 
       // Vérifier victoire
       const winningCells = this.board.checkWin(row, col, PLAYERS.Bot);
@@ -164,13 +185,7 @@ export class GameManager {
       timeTaken = Date.now() - this.moveStartTime;
     }
 
-    // Enregistrer le score
-    const points = this.scoreManager.calculateScore(
-      this.currentLevel,
-      timeTaken,
-      result
-    );
-
+    // Enregistrer le score et notifier React
     this.scoreManager.addScore(this.currentLevel, timeTaken, result);
 
     // Mettre à jour les stats du joueur
@@ -185,11 +200,7 @@ export class GameManager {
     // Laisser la grille affichée un court instant pour voir le quatuor gagnant
     this.gameOverTimeout = setTimeout(() => {
       this.ui.showGameOverScreen(this.currentLevel, result);
-      this.ui.showGameOverMessage(result, points, this.currentLevel);
-
-      // Mettre à jour l'affichage du score
-      this.ui.updateScoreDisplay(this.scoreManager.getCurrentScore());
-      this.ui.updateBestScoreDisplay(this.scoreManager.getBestScore());
+      this.ui.showGameOverMessage(result);
 
       this.gameOverTimeout = null;
     }, 1800);
@@ -199,7 +210,11 @@ export class GameManager {
    * Gère le timer de coup
    */
   startMoveTimer() {
+    // Sécurité : arrêter tout timer précédent avant d'en démarrer un nouveau
+    this.stopMoveTimer();
     this.moveStartTime = Date.now();
+    // Réinitialiser l'affichage immédiatement
+    this.ui.updateTimer(GAME_CONFIG.TIMER_DURATION);
 
     this.timerInterval = setInterval(() => {
       const elapsed = Date.now() - this.moveStartTime;
@@ -209,13 +224,14 @@ export class GameManager {
 
       if (remaining <= 0) {
         this.stopMoveTimer();
-        
+
         if (!this.gameActive) return;
 
         if (this.currentPlayer === PLAYERS.HUMAN) {
           // Coup auto du joueur (aléatoire)
           const validCols = this.board.getValidColumns();
-          const randomCol = validCols[Math.floor(Math.random() * validCols.length)];
+          const randomCol =
+            validCols[Math.floor(Math.random() * validCols.length)];
           this.playerMove(randomCol);
         }
       }
@@ -229,6 +245,10 @@ export class GameManager {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
+    }
+    if (this.botTimeout) {
+      clearTimeout(this.botTimeout);
+      this.botTimeout = null;
     }
   }
 
@@ -244,7 +264,7 @@ export class GameManager {
    */
   returnToHome() {
     this.gameActive = false;
-    this.stopMoveTimer();
+    this.stopMoveTimer(); // annule aussi botTimeout
     if (this.gameOverTimeout) {
       clearTimeout(this.gameOverTimeout);
       this.gameOverTimeout = null;
@@ -290,6 +310,8 @@ export class GameManager {
    * Obtient le prochain niveau
    */
   getNextLevel() {
-    return this.currentLevel < LEVELS.MASTER ? this.currentLevel + 1 : LEVELS.BEGINNER;
+    return this.currentLevel < LEVELS.MASTER
+      ? this.currentLevel + 1
+      : LEVELS.BEGINNER;
   }
 }

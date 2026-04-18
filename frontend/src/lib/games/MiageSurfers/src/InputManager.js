@@ -4,29 +4,31 @@
  * On stocke des flags booléens plutôt que de réagir
  * directement aux événements — plus propre dans une boucle de jeu.
  */
-class InputManager {
+export class InputManager {
   constructor() {
-    this.leftPressed  = false;
+    this.leftPressed = false;
     this.rightPressed = false;
-    this.jumpPressed  = false;
+    this.jumpPressed = false;
     this.slidePressed = false;
 
-    window.addEventListener('keydown', (e) => this._onKeyDown(e));
-    window.addEventListener('keyup',   (e) => this._onKeyUp(e));
+    this._boundOnKeyDown = (e) => this._onKeyDown(e);
+    this._boundOnKeyUp = (e) => this._onKeyUp(e);
+    window.addEventListener("keydown", this._boundOnKeyDown);
+    window.addEventListener("keyup", this._boundOnKeyUp);
   }
 
   _onKeyDown(e) {
-    if (e.key === 'ArrowLeft')                  this.leftPressed  = true;
-    if (e.key === 'ArrowRight')                 this.rightPressed = true;
-    if (e.key === 'ArrowUp' || e.key === ' ')   this.jumpPressed  = true;
-    if (e.key === 'ArrowDown')                  this.slidePressed = true;
+    if (e.key === "ArrowLeft") this.leftPressed = true;
+    if (e.key === "ArrowRight") this.rightPressed = true;
+    if (e.key === "ArrowUp" || e.key === " ") this.jumpPressed = true;
+    if (e.key === "ArrowDown") this.slidePressed = true;
   }
 
   _onKeyUp(e) {
-    if (e.key === 'ArrowLeft')                  this.leftPressed  = false;
-    if (e.key === 'ArrowRight')                 this.rightPressed = false;
-    if (e.key === 'ArrowUp' || e.key === ' ')   this.jumpPressed  = false;
-    if (e.key === 'ArrowDown')                  this.slidePressed = false;
+    if (e.key === "ArrowLeft") this.leftPressed = false;
+    if (e.key === "ArrowRight") this.rightPressed = false;
+    if (e.key === "ArrowUp" || e.key === " ") this.jumpPressed = false;
+    if (e.key === "ArrowDown") this.slidePressed = false;
   }
 
   /**
@@ -39,5 +41,10 @@ class InputManager {
       return true;
     }
     return false;
+  }
+
+  destroy() {
+    window.removeEventListener("keydown", this._boundOnKeyDown);
+    window.removeEventListener("keyup", this._boundOnKeyUp);
   }
 }

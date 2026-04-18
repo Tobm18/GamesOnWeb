@@ -10,12 +10,13 @@ import {
   RESULT,
   DOM_SELECTORS,
   CSS_CLASSES,
-  GAME_STATES
-} from '../utils/constants.js';
-import { formatTime, formatScore } from '../utils/helpers.js';
+  GAME_STATES,
+} from "../utils/constants.js";
+import { formatTime } from "../utils/helpers.js";
 
 export class UIManager {
-  constructor() {
+  constructor(signal) {
+    this.signal = signal || null;
     this.container = document.querySelector(DOM_SELECTORS.container);
     this.homeScreen = document.querySelector(DOM_SELECTORS.homeScreen);
     this.gameScreen = document.querySelector(DOM_SELECTORS.gameScreen);
@@ -45,11 +46,11 @@ export class UIManager {
    * Crée la grille DOM
    */
   createBoard() {
-    this.board.innerHTML = '';
+    this.board.innerHTML = "";
 
     for (let row = 0; row < GAME_CONFIG.ROWS; row++) {
       for (let col = 0; col < GAME_CONFIG.COLS; col++) {
-        const cell = document.createElement('div');
+        const cell = document.createElement("div");
         cell.className = CSS_CLASSES.cell;
         cell.dataset.row = row;
         cell.dataset.col = col;
@@ -62,19 +63,23 @@ export class UIManager {
    * Crée les boutons des colonnes
    */
   createColumnButtons() {
-    this.columnButtons.innerHTML = '';
+    this.columnButtons.innerHTML = "";
 
     for (let col = 0; col < GAME_CONFIG.COLS; col++) {
-      const button = document.createElement('button');
+      const button = document.createElement("button");
       button.className = CSS_CLASSES.playColBtn;
       button.dataset.col = col;
       button.textContent = `📥 Col ${col + 1}`;
-      
-      button.addEventListener('click', () => {
-        if (this.onColumnClick) {
-          this.onColumnClick(col);
-        }
-      });
+
+      button.addEventListener(
+        "click",
+        () => {
+          if (this.onColumnClick) {
+            this.onColumnClick(col);
+          }
+        },
+        { signal: this.signal },
+      );
 
       this.columnButtons.appendChild(button);
     }
@@ -86,7 +91,7 @@ export class UIManager {
   createLevelSelector() {
     // Pas de sélection manuelle de niveaux - progression automatique
     if (this.levelSelector) {
-      this.levelSelector.innerHTML = '';
+      this.levelSelector.innerHTML = "";
     }
   }
 
@@ -94,9 +99,9 @@ export class UIManager {
    * Affiche l'écran d'accueil
    */
   showHomeScreen() {
-    this.homeScreen.style.display = 'block';
-    this.gameScreen.style.display = 'none';
-    this.gameOverScreen.style.display = 'none';
+    this.homeScreen.style.display = "block";
+    this.gameScreen.style.display = "none";
+    this.gameOverScreen.style.display = "none";
     this.currentState = GAME_STATES.HOME;
   }
 
@@ -104,9 +109,9 @@ export class UIManager {
    * Affiche l'écran de jeu
    */
   showGameScreen() {
-    this.homeScreen.style.display = 'none';
-    this.gameScreen.style.display = 'block';
-    this.gameOverScreen.style.display = 'none';
+    this.homeScreen.style.display = "none";
+    this.gameScreen.style.display = "block";
+    this.gameOverScreen.style.display = "none";
     this.currentState = GAME_STATES.PLAYING;
   }
 
@@ -114,11 +119,11 @@ export class UIManager {
    * Affiche l'écran de fin de partie
    */
   showGameOverScreen(currentLevel, result) {
-    this.homeScreen.style.display = 'none';
-    this.gameScreen.style.display = 'none';
-    this.gameOverScreen.style.display = 'block';
+    this.homeScreen.style.display = "none";
+    this.gameScreen.style.display = "none";
+    this.gameOverScreen.style.display = "block";
     this.currentState = GAME_STATES.GAME_OVER;
-    
+
     const playAgainBtn = document.querySelector(DOM_SELECTORS.playAgainBtn);
     if (!playAgainBtn) {
       return;
@@ -126,10 +131,11 @@ export class UIManager {
 
     if (result === RESULT.HUMAN_WIN && currentLevel < LEVELS.MASTER) {
       const nextLevel = currentLevel + 1;
-      const nextLevelName = LEVEL_INFO[nextLevel]?.name || '';
+      const nextLevelName = LEVEL_INFO[nextLevel]?.name || "";
       playAgainBtn.textContent = `⬆️ Continuer vers le niveau ${nextLevel} - ${nextLevelName}`;
     } else {
-      playAgainBtn.textContent = '🔄 Recommencer une partie au niveau 1 - Débutant';
+      playAgainBtn.textContent =
+        "🔄 Recommencer une partie au niveau 1 - Débutant";
     }
   }
 
@@ -137,14 +143,20 @@ export class UIManager {
    * Met à jour l'affichage de la grille
    */
   updateBoard(board) {
-    const cells = document.querySelectorAll(`${DOM_SELECTORS.board} .${CSS_CLASSES.cell}`);
+    const cells = document.querySelectorAll(
+      `${DOM_SELECTORS.board} .${CSS_CLASSES.cell}`,
+    );
 
-    cells.forEach(cell => {
+    cells.forEach((cell) => {
       const row = parseInt(cell.dataset.row);
       const col = parseInt(cell.dataset.col);
       const value = board[row][col];
 
-      cell.classList.remove(CSS_CLASSES.player, CSS_CLASSES.bot, CSS_CLASSES.empty);
+      cell.classList.remove(
+        CSS_CLASSES.player,
+        CSS_CLASSES.bot,
+        CSS_CLASSES.empty,
+      );
 
       if (value === PLAYERS.HUMAN) {
         cell.classList.add(CSS_CLASSES.player);
@@ -161,37 +173,38 @@ export class UIManager {
    */
   addPiece(row, col, player) {
     const cell = document.querySelector(
-      `${DOM_SELECTORS.board} [data-row="${row}"][data-col="${col}"]`
+      `${DOM_SELECTORS.board} [data-row="${row}"][data-col="${col}"]`,
     );
 
     if (!cell) return Promise.resolve();
 
-    const className = player === PLAYERS.HUMAN ? CSS_CLASSES.player : CSS_CLASSES.bot;
+    const className =
+      player === PLAYERS.HUMAN ? CSS_CLASSES.player : CSS_CLASSES.bot;
     cell.classList.remove(CSS_CLASSES.empty, CSS_CLASSES.winning);
     cell.classList.add(className);
 
     // Animer la chute et notifier la fin pour synchroniser la logique de victoire.
-    cell.style.animation = 'none';
+    cell.style.animation = "none";
     void cell.offsetWidth;
-    cell.style.animation = 'fall 0.5s ease-in';
+    cell.style.animation = "fall 0.5s ease-in";
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let resolved = false;
 
       const finish = () => {
         if (resolved) return;
         resolved = true;
-        cell.removeEventListener('animationend', onAnimationEnd);
+        cell.removeEventListener("animationend", onAnimationEnd);
         resolve();
       };
 
-      const onAnimationEnd = event => {
-        if (event.animationName === 'fall') {
+      const onAnimationEnd = (event) => {
+        if (event.animationName === "fall") {
           finish();
         }
       };
 
-      cell.addEventListener('animationend', onAnimationEnd);
+      cell.addEventListener("animationend", onAnimationEnd);
       setTimeout(finish, 550);
     });
   }
@@ -202,11 +215,11 @@ export class UIManager {
   highlightWinningCells(winningCells) {
     winningCells.forEach(({ r, c }) => {
       const cell = document.querySelector(
-        `${DOM_SELECTORS.board} [data-row="${r}"][data-col="${c}"]`
+        `${DOM_SELECTORS.board} [data-row="${r}"][data-col="${c}"]`,
       );
       if (cell) {
         // Libère l'animation inline de chute pour laisser l'animation de surbrillance s'appliquer.
-        cell.style.animation = '';
+        cell.style.animation = "";
         void cell.offsetWidth;
         cell.classList.add(CSS_CLASSES.winning);
       }
@@ -224,26 +237,6 @@ export class UIManager {
   }
 
   /**
-   * Met à jour le score affiché
-   */
-  updateScoreDisplay(score) {
-    const display = document.querySelector(DOM_SELECTORS.scoreDisplay);
-    if (display) {
-      display.textContent = `Score: ${formatScore(score)} pts`;
-    }
-  }
-
-  /**
-   * Met à jour le meilleur score
-   */
-  updateBestScoreDisplay(bestScore) {
-    const display = document.querySelector(DOM_SELECTORS.bestScoreDisplay);
-    if (display) {
-      display.textContent = `🏆 Meilleur: ${formatScore(bestScore)} pts`;
-    }
-  }
-
-  /**
    * Met à jour le timer
    */
   updateTimer(timeLeft) {
@@ -253,34 +246,29 @@ export class UIManager {
       display.textContent = `⏱️ ${seconds}s`;
 
       // Changer la couleur selon le temps restant
-      display.style.color = '#3fb950'; // Vert
-      if (seconds <= 10) display.style.color = '#d29922'; // Orange
-      if (seconds <= 5) display.style.color = '#f85149'; // Rouge
+      display.style.color = "#3fb950"; // Vert
+      if (seconds <= 10) display.style.color = "#d29922"; // Orange
+      if (seconds <= 5) display.style.color = "#f85149"; // Rouge
     }
   }
 
   /**
    * Affiche le message de fin de partie
    */
-  showGameOverMessage(result, finalScore, level) {
+  showGameOverMessage(result) {
     const message = document.querySelector(DOM_SELECTORS.gameResultMessage);
-    const finalScoreEl = document.querySelector(DOM_SELECTORS.finalScoreDisplay);
 
     if (message) {
-      if (result === 'HUMAN_WIN') {
-        message.textContent = '🎉 Vous avez gagné!';
-        message.style.color = '#3fb950';
-      } else if (result === 'BOT_WIN') {
-        message.textContent = '❌ Le Bot a gagné!';
-        message.style.color = '#f85149';
+      if (result === "HUMAN_WIN") {
+        message.textContent = "🎉 Vous avez gagné!";
+        message.style.color = "#3fb950";
+      } else if (result === "BOT_WIN") {
+        message.textContent = "❌ Le Bot a gagné!";
+        message.style.color = "#f85149";
       } else {
-        message.textContent = '🤝 Match nul!';
-        message.style.color = '#58a6ff';
+        message.textContent = "🤝 Match nul!";
+        message.style.color = "#58a6ff";
       }
-    }
-
-    if (finalScoreEl) {
-      finalScoreEl.textContent = `+${formatScore(finalScore)} pts`;
     }
   }
 
@@ -289,7 +277,7 @@ export class UIManager {
    */
   disableColumnButtons(disable = true) {
     const buttons = document.querySelectorAll(`.${CSS_CLASSES.playColBtn}`);
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
       btn.disabled = disable;
     });
   }
@@ -299,11 +287,11 @@ export class UIManager {
    */
   disableColumn(col) {
     const button = document.querySelector(
-      `.${CSS_CLASSES.playColBtn}[data-col="${col}"]`
+      `.${CSS_CLASSES.playColBtn}[data-col="${col}"]`,
     );
     if (button) {
       button.disabled = true;
-      button.style.opacity = '0.5';
+      button.style.opacity = "0.5";
     }
   }
 
@@ -312,11 +300,11 @@ export class UIManager {
    */
   enableColumn(col) {
     const button = document.querySelector(
-      `.${CSS_CLASSES.playColBtn}[data-col="${col}"]`
+      `.${CSS_CLASSES.playColBtn}[data-col="${col}"]`,
     );
     if (button) {
       button.disabled = false;
-      button.style.opacity = '1';
+      button.style.opacity = "1";
     }
   }
 
@@ -325,18 +313,24 @@ export class UIManager {
    */
   resetGame() {
     // Réinitialiser les cellules
-    const cells = document.querySelectorAll(`${DOM_SELECTORS.board} .${CSS_CLASSES.cell}`);
-    cells.forEach(cell => {
-      cell.classList.remove(CSS_CLASSES.player, CSS_CLASSES.bot, CSS_CLASSES.winning);
+    const cells = document.querySelectorAll(
+      `${DOM_SELECTORS.board} .${CSS_CLASSES.cell}`,
+    );
+    cells.forEach((cell) => {
+      cell.classList.remove(
+        CSS_CLASSES.player,
+        CSS_CLASSES.bot,
+        CSS_CLASSES.winning,
+      );
       cell.classList.add(CSS_CLASSES.empty);
-      cell.style.animation = 'none';
+      cell.style.animation = "none";
     });
 
     // Réactiver tous les boutons
     const buttons = document.querySelectorAll(`.${CSS_CLASSES.playColBtn}`);
-    buttons.forEach(btn => {
+    buttons.forEach((btn) => {
       btn.disabled = false;
-      btn.style.opacity = '1';
+      btn.style.opacity = "1";
     });
   }
 
@@ -348,15 +342,23 @@ export class UIManager {
     const mainMenuBtn = document.querySelector(DOM_SELECTORS.mainMenuBtn);
 
     if (playAgainBtn) {
-      playAgainBtn.addEventListener('click', () => {
-        if (this.onPlayAgain) this.onPlayAgain();
-      });
+      playAgainBtn.addEventListener(
+        "click",
+        () => {
+          if (this.onPlayAgain) this.onPlayAgain();
+        },
+        { signal: this.signal },
+      );
     }
 
     if (mainMenuBtn) {
-      mainMenuBtn.addEventListener('click', () => {
-        if (this.onMainMenu) this.onMainMenu();
-      });
+      mainMenuBtn.addEventListener(
+        "click",
+        () => {
+          if (this.onMainMenu) this.onMainMenu();
+        },
+        { signal: this.signal },
+      );
     }
   }
 
@@ -364,7 +366,7 @@ export class UIManager {
    * Affiche une notification
    */
   showNotification(message, duration = 3000) {
-    const notif = document.createElement('div');
+    const notif = document.createElement("div");
     notif.style.cssText = `
       position: fixed;
       top: 20px;

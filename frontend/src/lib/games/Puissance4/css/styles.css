@@ -1,4 +1,10 @@
-:root {
+/* ============================================
+   PUISSANCE 4 – Styles isolés sous .p4-scope
+   Aucune règle ne déborde sur le reste du site.
+============================================ */
+
+.p4-scope {
+  /* Variables CSS scoped – n'affectent que .p4-scope et ses descendants */
   --bg-primary: #0d1117;
   --bg-secondary: #161b22;
   --bg-tertiary: #21262d;
@@ -17,42 +23,37 @@
   --bot-color: #58a6ff;
   --cell-border: #30363d;
   --cell-hover: rgba(88, 166, 255, 0.1);
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue",
+    Arial, sans-serif;
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
-* {
+.p4-scope * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue',
-    Arial, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  overflow: hidden;
-}
-
-body::before {
-    content: "🎮";
-    position: fixed;
-    font-size: 0;
-}
-
-#puissance4-container {
+.p4-scope #puissance4-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100%;
   padding: 20px;
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
 }
 
 /* ============================================
    ÉCRAN D'ACCUEIL
 ============================================ */
-#home-screen {
+.p4-scope #home-screen {
   text-align: center;
   background: var(--bg-secondary);
   padding: 40px;
@@ -63,11 +64,11 @@ body::before {
   animation: slideIn 0.5s ease-out;
 }
 
-#home-screen.hidden {
+.p4-scope #home-screen.hidden {
   display: none;
 }
 
-#home-screen h1 {
+.p4-scope #home-screen h1 {
   font-size: 48px;
   margin-bottom: 10px;
   background: linear-gradient(135deg, var(--info), var(--accent));
@@ -76,30 +77,30 @@ body::before {
   background-clip: text;
 }
 
-#home-screen p {
+.p4-scope #home-screen p {
   color: var(--text-secondary);
   margin-bottom: 30px;
   font-size: 16px;
 }
 
-#instructions {
-    color: var(--text-secondary); 
-    margin: 20px 0;
+.p4-scope #instructions {
+  color: var(--text-secondary);
+  margin: 20px 0;
 }
 
-#button-container {
-    margin-top: 30px;
+.p4-scope #button-container {
+  margin-top: 30px;
 }
 
 /* Sélecteur de niveaux */
-#level-selector {
+.p4-scope #level-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 30px;
 }
 
-.level-btn {
+.p4-scope .level-btn {
   padding: 12px 20px;
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -111,19 +112,19 @@ body::before {
   transition: all 0.3s ease;
 }
 
-.level-btn:hover {
+.p4-scope .level-btn:hover {
   background: var(--info);
   color: var(--bg-primary);
   border-color: var(--info);
   transform: scale(1.05);
 }
 
-.level-btn:active {
+.p4-scope .level-btn:active {
   transform: scale(0.98);
 }
 
 /* Boutons d'action */
-.action-button {
+.p4-scope .action-button {
   padding: 12px 24px;
   margin: 8px;
   background: var(--info);
@@ -136,24 +137,24 @@ body::before {
   transition: all 0.3s ease;
 }
 
-.action-button:hover {
+.p4-scope .action-button:hover {
   background: var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
 }
 
-.action-button:active {
+.p4-scope .action-button:active {
   transform: translateY(0);
 }
 
-.action-button:disabled {
+.p4-scope .action-button:disabled {
   background: var(--text-tertiary);
   cursor: not-allowed;
   opacity: 0.5;
 }
 
 /* Stats sur écran d'accueil */
-#best-score-display {
+.p4-scope #best-score-display {
   color: var(--success);
   font-size: 18px;
   margin-top: 20px;
@@ -164,7 +165,7 @@ body::before {
 /* ============================================
    ÉCRAN DE JEU
 ============================================ */
-#game-screen {
+.p4-scope #game-screen {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,12 +174,12 @@ body::before {
   max-width: 600px;
 }
 
-#game-screen.hidden {
+.p4-scope #game-screen.hidden {
   display: none;
 }
 
 /* Header du jeu */
-#game-header {
+.p4-scope #game-header {
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -193,23 +194,23 @@ body::before {
   gap: 15px;
 }
 
-#game-header > span {
+.p4-scope #game-header > span {
   font-weight: 600;
 }
 
-#challenge-message {
-    color: var(--text-secondary); 
-    margin-bottom: 30px; 
-    font-size: 14px;
+.p4-scope #challenge-message {
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-size: 14px;
 }
 
-#main-menu-btn{
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
+.p4-scope #main-menu-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
-#timer-display {
+.p4-scope #timer-display {
   font-size: 18px;
   font-weight: bold;
   color: var(--success);
@@ -217,7 +218,8 @@ body::before {
 }
 
 @keyframes pulse-timer {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -226,7 +228,7 @@ body::before {
 }
 
 /* Grille de jeu */
-#board {
+.p4-scope #board {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(6, 1fr);
@@ -240,7 +242,7 @@ body::before {
   width: 100%;
 }
 
-.cell {
+.p4-scope .cell {
   background: var(--bg-tertiary);
   border: 2px solid var(--border);
   border-radius: 50%;
@@ -252,23 +254,23 @@ body::before {
   justify-content: center;
 }
 
-.cell.empty {
+.p4-scope .cell.empty {
   background: linear-gradient(135deg, var(--bg-tertiary), #1c2128);
 }
 
-.cell.player {
+.p4-scope .cell.player {
   background: linear-gradient(135deg, var(--player-color), #d5445f);
   box-shadow: 0 0 12px rgba(248, 81, 73, 0.6);
   border-color: var(--player-color);
 }
 
-.cell.bot {
+.p4-scope .cell.bot {
   background: linear-gradient(135deg, var(--bot-color), #3b88db);
   box-shadow: 0 0 12px rgba(88, 166, 255, 0.6);
   border-color: var(--bot-color);
 }
 
-.cell.winning {
+.p4-scope .cell.winning {
   animation: winning 0.6s infinite;
   outline: 3px solid #ffd33d;
   outline-offset: 2px;
@@ -276,7 +278,8 @@ body::before {
 }
 
 @keyframes winning {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     filter: brightness(1);
   }
@@ -302,14 +305,14 @@ body::before {
 }
 
 /* Boutons de colonnes */
-#column-buttons {
+.p4-scope #column-buttons {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 8px;
   width: 100%;
 }
 
-.play-col {
+.p4-scope .play-col {
   padding: 10px;
   background: var(--info);
   color: var(--bg-primary);
@@ -321,17 +324,17 @@ body::before {
   transition: all 0.3s ease;
 }
 
-.play-col:hover:not(:disabled) {
+.p4-scope .play-col:hover:not(:disabled) {
   background: var(--accent);
   transform: scale(1.08) translateY(-2px);
   box-shadow: 0 4px 12px rgba(88, 166, 255, 0.4);
 }
 
-.play-col:active:not(:disabled) {
+.p4-scope .play-col:active:not(:disabled) {
   transform: scale(0.96);
 }
 
-.play-col:disabled {
+.p4-scope .play-col:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -339,7 +342,7 @@ body::before {
 /* ============================================
    ÉCRAN FIN DE PARTIE
 ============================================ */
-#game-over-screen {
+.p4-scope #game-over-screen {
   text-align: center;
   background: var(--bg-secondary);
   padding: 40px;
@@ -350,18 +353,18 @@ body::before {
   animation: slideIn 0.5s ease-out;
 }
 
-#game-over-screen.hidden {
+.p4-scope #game-over-screen.hidden {
   display: none;
 }
 
-#game-result-message {
+.p4-scope #game-result-message {
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 20px;
   color: var(--success);
 }
 
-#final-score-display {
+.p4-scope #final-score-display {
   font-size: 24px;
   color: var(--info);
   margin-bottom: 30px;
@@ -370,7 +373,7 @@ body::before {
   border-radius: 6px;
 }
 
-#game-over-screen button {
+.p4-scope #game-over-screen button {
   margin: 10px;
 }
 
@@ -378,66 +381,66 @@ body::before {
    RESPONSIVE DESIGN
 ============================================ */
 @media (max-width: 600px) {
-  #puissance4-container {
+  .p4-scope #puissance4-container {
     padding: 10px;
   }
 
-  #home-screen,
-  #game-over-screen {
+  .p4-scope #home-screen,
+  .p4-scope #game-over-screen {
     padding: 20px;
     max-width: 100%;
   }
 
-  #home-screen h1 {
+  .p4-scope #home-screen h1 {
     font-size: 36px;
   }
 
-  #level-selector {
+  .p4-scope #level-selector {
     grid-template-columns: 1fr;
   }
 
-  #game-screen {
+  .p4-scope #game-screen {
     max-width: 100%;
   }
 
-  #game-header {
+  .p4-scope #game-header {
     font-size: 12px;
     gap: 10px;
   }
 
-  #board {
+  .p4-scope #board {
     gap: 4px;
     padding: 10px;
   }
 
-  .cell {
+  .p4-scope .cell {
     border-width: 1px;
   }
 
-  #column-buttons {
+  .p4-scope #column-buttons {
     gap: 4px;
   }
 
-  .play-col {
+  .p4-scope .play-col {
     padding: 8px;
     font-size: 11px;
   }
 }
 
 @media (max-width: 400px) {
-  #home-screen h1 {
+  .p4-scope #home-screen h1 {
     font-size: 28px;
   }
 
-  #game-result-message {
+  .p4-scope #game-result-message {
     font-size: 24px;
   }
 
-  #final-score-display {
+  .p4-scope #final-score-display {
     font-size: 18px;
   }
 
-  .play-col {
+  .p4-scope .play-col {
     padding: 6px;
     font-size: 10px;
   }
@@ -458,25 +461,25 @@ body::before {
 }
 
 /* Scrollbar personnalisée */
-::-webkit-scrollbar {
+.p4-scope ::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit-scrollbar-track {
+.p4-scope ::-webkit-scrollbar-track {
   background: var(--bg-secondary);
 }
 
-::-webkit-scrollbar-thumb {
+.p4-scope ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.p4-scope ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
 }
 
 /* Bouton focus */
-button:focus-visible {
+.p4-scope button:focus-visible {
   outline: 2px solid var(--info);
   outline-offset: 2px;
 }
