@@ -133,6 +133,9 @@ export class UIManager {
       const nextLevel = currentLevel + 1;
       const nextLevelName = LEVEL_INFO[nextLevel]?.name || "";
       playAgainBtn.textContent = `⬆️ Continuer vers le niveau ${nextLevel} - ${nextLevelName}`;
+    } else if (result === RESULT.DRAW) {
+      const currentLevelName = LEVEL_INFO[currentLevel]?.name || "";
+      playAgainBtn.textContent = `🔁 Rejouer le niveau ${currentLevel} - ${currentLevelName}`;
     } else {
       playAgainBtn.textContent =
         "🔄 Recommencer une partie au niveau 1 - Débutant";

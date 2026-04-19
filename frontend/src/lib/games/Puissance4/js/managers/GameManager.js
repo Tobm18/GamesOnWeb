@@ -298,6 +298,11 @@ export class GameManager {
       return;
     }
 
+    if (this.lastGameResult === RESULT.DRAW) {
+      this.startNewGame(this.currentLevel, false);
+      return;
+    }
+
     this.playNextLevel();
   }
 
