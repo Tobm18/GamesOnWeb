@@ -1,4 +1,4 @@
-import * as BABYLON from "babylonjs";
+const BABYLON = window.BABYLON;
 
 export class Player {
   static LANES      = [-3, 0, 3];

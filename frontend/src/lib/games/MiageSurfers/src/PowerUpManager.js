@@ -1,4 +1,4 @@
-import * as BABYLON from "babylonjs";
+const BABYLON = window.BABYLON;
 
 export class PowerUpManager {
   static TYPES    = ['magnet', 'shield', 'speed', 'jetpack'];
