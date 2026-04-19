@@ -37,8 +37,8 @@ Ce mode démarre le front-end et le back-end.
 
 Voici la répartition réelle des tâches entre les membres du groupe :
 
-* **Tom BALLESTER** : création du site web, développement de Keep It Alive et réalisation des vidéos de présentation
-* **Tom COURGENAY** : développement de Puissance 4, ajustements sur le scoring du site et rédaction de ce README
+* **Tom BALLESTER** : création du site web, développement de Keep It Alive
+* **Tom COURGENAY** : développement de Puissance 4, ajustements sur le scoring du site, rédaction de ce README et réalisation de la vidéo de présentation
 * **Francesca PAPP** : développement de Miage Surfers et rédaction du rapport
 
 ### Pourcentage de travail fourni
@@ -68,3 +68,6 @@ Nous avons choisi de proposer trois jeux avec trois technologies differentes (ca
 Sur ce projet nous avons tout les 3 eu une V1 d'une landing page mais avons décidé de garder celui de Tom qu'il a ensuite perfectionner. Puis nous avons développé chacun de notre côté nos jeux respectifs. Sur la dernière semaine, nous avons tous travaillé ensemble pour intégrer les jeux dans le site, corriger les bugs et finaliser le projet. C'est ce qui a été le plus compliqué, car il fallait faire cohabiter plusieurs jeux dans un même site tout en gardant une navigation simple et un système de scores cohérent.
 
 Au final, Tom'sOnWeb reste à notre avis une réussite pour chacun en découvrant de nouvelles technologie ou au moins une nouvelles manière de les utiliser.
+
+## Vidéos de présentation
+Voici la vidéo de présentation de Tom's on Web : [YouTube](https://youtu.be/wP61flIaLPo)
