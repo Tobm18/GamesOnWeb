@@ -1,4 +1,4 @@
-const BABYLON = window.BABYLON;
+import * as BABYLON from "babylonjs";
 import { InputManager } from "./InputManager.js";
 import { Player } from "./Player.js";
 import { PowerUpManager } from "./PowerUpManager.js";

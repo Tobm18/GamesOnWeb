@@ -1,4 +1,4 @@
-const BABYLON = window.BABYLON;
+import * as BABYLON from "babylonjs";
 
 export class TileManager {
   static TILE_LENGTH   = 24;

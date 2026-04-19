@@ -1,4 +1,4 @@
-const BABYLON = window.BABYLON;
+import * as BABYLON from "babylonjs";
 
 export class PowerUpManager {
   static TYPES    = ['magnet', 'shield', 'speed', 'jetpack'];
@@ -185,6 +185,7 @@ export class PowerUpManager {
     const icons   = { magnet: '🧲', shield: '🛡️', speed: '⚡', jetpack: '🚀' };
     const actives = PowerUpManager.TYPES.filter(t => this.active[t]);
     const display = document.getElementById('powerupDisplay');
+    if (!display) return;
     if (actives.length > 0) {
       display.textContent   = actives.map(t => icons[t]).join(' ');
       display.style.opacity = '1';
