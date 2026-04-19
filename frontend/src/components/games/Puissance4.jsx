@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, forwardRef } from "react";
 import "../../lib/games/Puissance4/css/styles.css";
 
-const Puissance4 = forwardRef(({ onScoreUpdate, isFullscreen }, ref) => {
+const Puissance4 = forwardRef(({ onScoreUpdate, onGameOver, isFullscreen }, ref) => {
   const gameRef = useRef(null);
   // Keep a ref to the latest callback to avoid restarting the game on re-renders
   const onScoreUpdateRef = useRef(onScoreUpdate);
+  const onGameOverRef = useRef(onGameOver);
   useEffect(() => {
     onScoreUpdateRef.current = onScoreUpdate;
+    onGameOverRef.current = onGameOver;
   });
 
   useEffect(() => {
@@ -19,9 +21,14 @@ const Puissance4 = forwardRef(({ onScoreUpdate, isFullscreen }, ref) => {
     import("../../lib/games/Puissance4/js/main.js").then(
       ({ initPuissance4 }) => {
         if (cancelled) return; // composant déjà démonté, on n'initialise pas
-        const instance = initPuissance4((score) => {
-          if (onScoreUpdateRef.current) onScoreUpdateRef.current(score);
-        });
+        const instance = initPuissance4(
+          (score) => {
+            if (onScoreUpdateRef.current) onScoreUpdateRef.current(score);
+          },
+          (finalScore) => {
+            if (onGameOverRef.current) onGameOverRef.current(finalScore);
+          },
+        );
         gameRef.current = instance;
       },
     );
@@ -93,7 +100,8 @@ const Puissance4 = forwardRef(({ onScoreUpdate, isFullscreen }, ref) => {
       </div>
     </div>
   );
-});
+},
+);
 
 Puissance4.displayName = "Puissance4";
 export default Puissance4;

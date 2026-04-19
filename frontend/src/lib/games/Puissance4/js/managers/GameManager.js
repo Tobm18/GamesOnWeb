@@ -37,7 +37,7 @@ export class GameManager {
   /**
    * Démarre une nouvelle partie
    */
-  startNewGame(level) {
+  startNewGame(level, resetSessionScore = true) {
     if (this.gameOverTimeout) {
       clearTimeout(this.gameOverTimeout);
       this.gameOverTimeout = null;
@@ -50,7 +50,9 @@ export class GameManager {
     this.gameActive = true;
     this.botThinking = false;
 
-    this.scoreManager.resetSessionScore();
+    if (resetSessionScore) {
+      this.scoreManager.resetSessionScore();
+    }
 
     this.ui.showGameScreen();
     this.ui.resetGame();
@@ -284,7 +286,7 @@ export class GameManager {
       // Si au dernier niveau, recommencer au niveau 1
       this.currentLevel = LEVELS.BEGINNER;
     }
-    this.startNewGame(this.currentLevel);
+    this.startNewGame(this.currentLevel, false);
   }
 
   /**
@@ -292,7 +294,7 @@ export class GameManager {
    */
   handlePlayAgain() {
     if (this.lastGameResult === RESULT.BOT_WIN) {
-      this.startNewGame(LEVELS.BEGINNER);
+      this.startNewGame(LEVELS.BEGINNER, true);
       return;
     }
 

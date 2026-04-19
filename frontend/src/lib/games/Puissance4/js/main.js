@@ -7,10 +7,10 @@ import { GameManager } from "./managers/GameManager.js";
 import { ScoreManager } from "./managers/ScoreManager.js";
 
 class Puissance4Game {
-  constructor(onScoreUpdate) {
+  constructor(onScoreUpdate, onGameOver) {
     this.controller = new AbortController();
     this.uiManager = new UIManager(this.controller.signal);
-    this.scoreManager = new ScoreManager(onScoreUpdate);
+    this.scoreManager = new ScoreManager(onScoreUpdate, onGameOver);
     this.gameManager = new GameManager(this.uiManager, this.scoreManager);
   }
 
@@ -81,10 +81,11 @@ class Puissance4Game {
  * Initialise Puissance4 dans le DOM courant.
  * Doit être appelé après que le composant React a monté les éléments HTML.
  * @param {function} onScoreUpdate - callback(score) appelé à chaque mise à jour de score
+ * @param {function} onGameOver - callback(finalScore) appelé à la fin de chaque partie
  * @returns {{ destroy: function }} - objet avec une méthode destroy pour le cleanup
  */
-export function initPuissance4(onScoreUpdate) {
-  const game = new Puissance4Game(onScoreUpdate);
+export function initPuissance4(onScoreUpdate, onGameOver) {
+  const game = new Puissance4Game(onScoreUpdate, onGameOver);
   game.init();
   return { destroy: () => game.destroy() };
 }
@@ -99,7 +100,7 @@ if (typeof document !== "undefined" && document.readyState !== "loading") {
       document.querySelector("#puissance4-container") &&
       !window.__puissance4React
     ) {
-      const game = new Puissance4Game(null);
+      const game = new Puissance4Game(null, null);
       game.init();
     }
   });
