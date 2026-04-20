@@ -45,9 +45,9 @@ Voici la répartition réelle des tâches entre les membres du groupe :
 
 Répartition estimée :
 
-* Tom BALLESTER : 40 %
-* Tom COURGENAY : 30 %
-* Francesca PAPP : 30 %
+* Tom BALLESTER : 33,34 %
+* Tom COURGENAY : 33,33 %
+* Francesca PAPP : 33,33 %
 
 Cette répartition nous semble assez représentative du travail global, même si certaines tâches (tests, corrections de bugs, ajustements) ont été faites un peu par tout le monde à différents moments du projet.
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef } from "react";
 import StartScreen from "../StartScreen";
 import GameOver from "../GameOver";
-import { initKeepItAlive } from "../../lib/games/keep-it-alive";
+import { initKeepItAlive } from "../../lib/games/KeepItAlive/index.js";
 
 const KeepItAlive = forwardRef(
   ({ onScoreUpdate, onGameOver, isFullscreen }, ref) => {
